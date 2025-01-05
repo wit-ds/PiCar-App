@@ -406,7 +406,6 @@ async def recv_msg(websocket):
 
         try:
             data = json.loads(data)
-            print('JSON data : ', data)
         except Exception as e:
             print('not A JSON')
 
@@ -432,7 +431,19 @@ async def recv_msg(websocket):
                     speed_set = int(set_B[1])
                 except:
                     pass
-
+            
+            elif 'reboot' == data:
+                try:
+                    os.system('sudo reboot')
+                except:
+                    pass
+            
+            elif 'shutdown' == data:
+                try:
+                    os.system('sudo halt')
+                except:
+                    pass
+                
             elif 'AR' == data:
                 modeSelect = 'AR'
                 screen.screen_show(4, 'ARM MODE ON')
