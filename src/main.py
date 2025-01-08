@@ -10,6 +10,10 @@ import json
 import flaskRoute
 import raspberryInfos
 import robotLight
+import motors
+
+speed_set = 100
+rad = 0.5
 
 async def check_permit(websocket):
     while True:
@@ -23,9 +27,23 @@ async def check_permit(websocket):
             response_str = "sorry, the username or password is wrong, please submit again"
             await websocket.send(response_str)
 
+
+def robotCtrl(command_input, response):
+    if 'forward' == command_input:
+        direction_command = 'forward'
+        motors.move(speed_set, 'forward', 'no', rad)
+    
+    elif 'backward' == command_input:
+        direction_command = 'backward'
+        motors.move(speed_set, 'backward', 'no', rad)
+
+    elif 'DS' in command_input:
+        direction_command = 'no'
+        motors.move(speed_set, 'no', 'no', rad)
+
+
 async def recv_msg(websocket):
     # global speed_set, modeSelect
-    # move.setup()
     # direction_command = 'no'
     # turn_command = 'no'
 
@@ -38,12 +56,6 @@ async def recv_msg(websocket):
 
         data = ''
         data = await websocket.recv()
-        # try:
-        #     data = await websocket.recv()
-        # except:
-        #     print("WEB interface disconnected!")
-        #     move.destroy()      # motor stop.
-        #     scGear.moveInit()   # servo  back initial position.
 
         try:
             data = json.loads(data)
@@ -153,6 +165,8 @@ async def main_logic(websocket, path):
 if __name__ == '__main__':
     # switch.switchSetup()
     # switch.set_all_switch_off()
+    
+    motors.setup()
 
     global flask_app
     flask_app = flaskRoute.webapp()
@@ -168,13 +182,11 @@ if __name__ == '__main__':
     # testNC_threading.setDaemon(False)
     # testNC_threading.start()                                     
 
-
     try:
         RL=robotLight.RobotLight()
         RL.start()
         RL.breath(70,70,255)
     except:
-        print('Utilisez "sudo pip3 install rpi_ws281x" pour installer le package WS_281x\nUtilisez la commande "sudo pip3 install rpi_ws281x" pour installer rpi_ws281x')
         pass
 
     try:
@@ -195,4 +207,4 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
         RL.setColor(0,0,0)
-        # move.destroy()
+        motors.destroy()
