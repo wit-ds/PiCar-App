@@ -10,7 +10,7 @@ import json
 import flaskRoute
 import raspberryInfos
 import robotLight
-import motors
+import propulsion
 
 speed_set = 100
 rad = 0.5
@@ -31,15 +31,15 @@ async def check_permit(websocket):
 def robotCtrl(command_input, response):
     if 'forward' == command_input:
         direction_command = 'forward'
-        motors.move(speed_set, 'forward', 'no', rad)
+        propulsion.move(speed_set, 'forward', 'no', rad)
     
     elif 'backward' == command_input:
         direction_command = 'backward'
-        motors.move(speed_set, 'backward', 'no', rad)
+        propulsion.move(speed_set, 'backward', 'no', rad)
 
     elif 'DS' in command_input:
         direction_command = 'no'
-        motors.move(speed_set, 'no', 'no', rad)
+        propulsion.move(speed_set, 'no', 'no', rad)
 
 
 async def recv_msg(websocket):
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     # switch.switchSetup()
     # switch.set_all_switch_off()
     
-    motors.setup()
+    propulsion.setup()
 
     global flask_app
     flask_app = flaskRoute.webapp()
@@ -208,4 +208,4 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
         RL.setColor(0,0,0)
-        motors.destroy()
+        propulsion.destroy()
