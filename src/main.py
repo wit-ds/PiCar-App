@@ -66,7 +66,8 @@ async def recv_msg(websocket):
             continue
 
         if isinstance(data,str):
-            # robotCtrl(data, response)
+            
+            robotCtrl(data, response)
 
             # switchCtrl(data, response)
 
