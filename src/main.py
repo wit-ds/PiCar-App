@@ -8,6 +8,7 @@ import websockets
 import json
 
 import flaskRoute
+import raspberryInfos
 
 mark_test = 0
 
@@ -111,14 +112,15 @@ async def recv_msg(websocket):
 
             # configPWM(data, response)
 
-            if 'test' in data:
-                print('test')
-                response['title'] = 'test'
-                response['data'] = 'testtest'
-
-            # if 'get_info' == data:
-            #     response['title'] = 'get_info'
-            #     response['data'] = [info.get_cpu_tempfunc(), info.get_cpu_use(), info.get_ram_info()]
+            if 'get_info' == data:
+                response['title'] = 'get_info'
+                response['data'] = [
+                    raspberryInfos.get_cpu_tempfunc(), 
+                    raspberryInfos.get_cpu_use(), 
+                    raspberryInfos.get_ram_info(),
+                    raspberryInfos.get_swap_info(),
+                    raspberryInfos.get_gpu_tempfunc()
+                ]
 
             # if 'wsB' in data:
             #     try:
@@ -202,21 +204,21 @@ if __name__ == '__main__':
     # switch.switchSetup()
     # switch.set_all_switch_off()
 
-    HOST = ''
-    PORT = 10223                              #Define port serial 
-    BUFSIZ = 1024                             #Define buffer size
-    ADDR = (HOST, PORT)
+    # HOST = ''
+    # PORT = 10223                              #Define port serial 
+    # BUFSIZ = 1024                             #Define buffer size
+    # ADDR = (HOST, PORT)
 
     global flask_app
     flask_app = flaskRoute.webapp()
     flask_app.startthread()
 
-    """ 
-    If the Raspberry Pi is disconnected from the Internet, stop the car from moving.
-    Reconnect to the network, you can continue to control the car.
-    If you need this function, please enable the following three lines of code.
-    Note: The program will additionally occupy the running memory of the Raspberry Pi.
-    """
+    # """ 
+    # If the Raspberry Pi is disconnected from the Internet, stop the car from moving.
+    # Reconnect to the network, you can continue to control the car.
+    # If you need this function, please enable the following three lines of code.
+    # Note: The program will additionally occupy the running memory of the Raspberry Pi.
+    # """
     # testNC_threading=threading.Thread(target=test_Network_Connection)
     # testNC_threading.setDaemon(False)
     # testNC_threading.start()                                     
@@ -231,7 +233,7 @@ if __name__ == '__main__':
     #     pass
 
     while  1:
-        wifi_check()
+        # wifi_check()
         try:                  #Start server,waiting for client
             start_server = websockets.serve(main_logic, '0.0.0.0', 8888)
             asyncio.get_event_loop().run_until_complete(start_server)
