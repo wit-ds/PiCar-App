@@ -5,6 +5,8 @@
 # Author      : William
 # Date        : 2019/08/28
 import psutil
+import os
+import re
 
 def get_cpu_tempfunc():
     """ Return CPU temperature """
@@ -22,7 +24,11 @@ def get_cpu_tempfunc():
 def get_gpu_tempfunc():
     """ Return GPU temperature as a character string"""
     res = os.popen('/opt/vc/bin/vcgencmd measure_temp').readline()
-    return res.replace("temp=", "")
+    match = re.search(r"(\d+\.\d+)", res)
+    valeur = -1
+    if match:
+        valeur = float(match.group(1))
+    return valeur
 
 
 def get_cpu_use():

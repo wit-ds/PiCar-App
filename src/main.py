@@ -204,11 +204,6 @@ if __name__ == '__main__':
     # switch.switchSetup()
     # switch.set_all_switch_off()
 
-    # HOST = ''
-    # PORT = 10223                              #Define port serial 
-    # BUFSIZ = 1024                             #Define buffer size
-    # ADDR = (HOST, PORT)
-
     global flask_app
     flask_app = flaskRoute.webapp()
     flask_app.startthread()
@@ -250,7 +245,7 @@ if __name__ == '__main__':
         #     pass
     try:
         asyncio.get_event_loop().run_forever()
-
+        print('==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==')
     except Exception as e:
         print(e)
         # RL.setColor(0,0,0)
