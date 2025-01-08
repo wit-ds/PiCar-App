@@ -9,57 +9,7 @@ import json
 
 import flaskRoute
 import raspberryInfos
-
-mark_test = 0
-
-def wifi_check():
-    global mark_test
-    try:
-        s =socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-        s.connect(("1.1.1.1",80))
-        ipaddr_check=s.getsockname()[0]
-        s.close()
-        print(ipaddr_check)
-        # #update_code()
-        # if OLED_connection:
-        #     screen.screen_show(2, 'IP:'+ipaddr_check)
-        #     screen.screen_show(3, 'AP MODE OFF')
-        mark_test = 1  
-    except:
-        if mark_test == 1:
-            mark_test = 0
-            # move.destroy()      # motor stop.
-            # scGear.moveInit()   # servo  back initial position.
-
-        # ap_threading=threading.Thread(target=ap_thread)   #Define a thread for data receiving
-        # ap_threading.setDaemon(True)                          #'True' means it is a front thread,it would close when the mainloop() closes
-        # ap_threading.start()                                  #Thread starts
-        # if OLED_connection:
-        #     screen.screen_show(2, 'AP Starting 10%')
-        # RL.setColor(0,16,50)
-        # time.sleep(1)
-        # if OLED_connection:
-        #     screen.screen_show(2, 'AP Starting 30%')
-        # RL.setColor(0,16,100)
-        # time.sleep(1)
-        # if OLED_connection:
-        #     screen.screen_show(2, 'AP Starting 50%')
-        # RL.setColor(0,16,150)
-        # time.sleep(1)
-        # if OLED_connection:
-        #     screen.screen_show(2, 'AP Starting 70%')
-        # RL.setColor(0,16,200)
-        # time.sleep(1)
-        # if OLED_connection:
-        #     screen.screen_show(2, 'AP Starting 90%')
-        # RL.setColor(0,16,255)
-        # time.sleep(1)
-        # if OLED_connection:
-        #     screen.screen_show(2, 'AP Starting 100%')
-        # RL.setColor(35,255,35)
-        # if OLED_connection:
-        #     screen.screen_show(2, 'IP:192.168.12.1')
-        #     screen.screen_show(3, 'AP MODE ON')
+import robotLight
 
 async def check_permit(websocket):
     while True:
@@ -219,34 +169,30 @@ if __name__ == '__main__':
     # testNC_threading.start()                                     
 
 
-    # try:
-    #     RL=robotLight.RobotLight()
-    #     RL.start()
-    #     RL.breath(70,70,255)
-    # except:
-    #     print('Utilisez "sudo pip3 install rpi_ws281x" pour installer le package WS_281x\nUtilisez la commande "sudo pip3 install rpi_ws281x" pour installer rpi_ws281x')
-    #     pass
-
-    while  1:
-        # wifi_check()
-        try:                  #Start server,waiting for client
-            start_server = websockets.serve(main_logic, '0.0.0.0', 8888)
-            asyncio.get_event_loop().run_until_complete(start_server)
-            print('waiting for connection...')
-            # print('...connected from :', addr)
-            break
-        except Exception as e:
-            print(e)
-            # RL.setColor(0,0,0)
-
-        # try:
-        #     RL.setColor(0,80,255)
-        # except:
-        #     pass
     try:
-        asyncio.get_event_loop().run_forever()
-        print('==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==ICI==')
+        RL=robotLight.RobotLight()
+        RL.start()
+        RL.breath(70,70,255)
+    except:
+        print('Utilisez "sudo pip3 install rpi_ws281x" pour installer le package WS_281x\nUtilisez la commande "sudo pip3 install rpi_ws281x" pour installer rpi_ws281x')
+        pass
+
+    try:
+        start_server = websockets.serve(main_logic, '0.0.0.0', 8888)
+        asyncio.get_event_loop().run_until_complete(start_server)
+        print('waiting for connection...')
     except Exception as e:
         print(e)
-        # RL.setColor(0,0,0)
+        RL.setColor(0,0,0)
+
+    try:
+        RL.setColor(0,80,255)
+    except:
+        pass
+
+    try:
+        asyncio.get_event_loop().run_forever()
+    except Exception as e:
+        print(e)
+        RL.setColor(0,0,0)
         # move.destroy()
