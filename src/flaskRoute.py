@@ -23,9 +23,10 @@ CORS(app, supports_credentials=True)
 #         yield (b'--frame\r\n'
 #                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-# @app.route('/video_feed')
-# def video_feed():
-#     """Video streaming route. Put this in the src attribute of an img tag."""
+@app.route('/video_feed')
+def video_feed():
+    """Video streaming route. Put this in the src attribute of an img tag."""
+    return Response(None, mimetype='multipart/x-mixed-replace; boundary=frame')
 #     return Response(gen(camera),
 #                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
