@@ -156,8 +156,6 @@ if __name__ == '__main__':
     # switch.switchSetup()
     # switch.set_all_switch_off()
     
-    propulsion.setup()
-
     global flask_app
     flask_app = flaskRoute.webapp()
     flask_app.startthread()

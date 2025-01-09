@@ -11,12 +11,15 @@ class PiCar:
 
     def propulsion(self, command_input, response):
         if 'forward' == command_input:
+            print("forward")
             motorCtrl.move_forward(self.speed_set)
         
         elif 'backward' == command_input:
-            motorCtrl.move_forward(self.speed_set)
+            print("backward")
+            motorCtrl.move_backward(self.speed_set)
 
         elif 'DS' in command_input:
+            print("stop")
             motorCtrl.stop()
 
     
