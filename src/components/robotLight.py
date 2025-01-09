@@ -9,6 +9,9 @@ import sys
 from rpi_ws281x import Adafruit_NeoPixel, Color
 import threading
 
+breathSteps = 10
+breathDelay = 0.1
+
 class RobotLight(threading.Thread):
 	def __init__(self, *args, **kwargs):
 		self.LED_COUNT	  	= 3	  # Number of LED pixels.
@@ -22,7 +25,6 @@ class RobotLight(threading.Thread):
 		self.colorBreathR = 0
 		self.colorBreathG = 0
 		self.colorBreathB = 0
-		self.breathSteps = 10
 
 		self.lightMode = 'none'		#'none' 'police' 'breath'
 
@@ -101,16 +103,16 @@ class RobotLight(threading.Thread):
 
 	def breathProcessing(self):
 		while self.lightMode == 'breath':
-			for i in range(0,self.breathSteps):
+			for i in range(0,breathSteps):
 				if self.lightMode != 'breath':
 					break
-				self.setColor(self.colorBreathR*i/self.breathSteps, self.colorBreathG*i/self.breathSteps, self.colorBreathB*i/self.breathSteps)
-				time.sleep(0.03)
-			for i in range(0,self.breathSteps):
+				self.setColor(self.colorBreathR*i/breathSteps, self.colorBreathG*i/breathSteps, self.colorBreathB*i/breathSteps)
+				time.sleep(breathDelay)
+			for i in range(0,breathSteps):
 				if self.lightMode != 'breath':
 					break
-				self.setColor(self.colorBreathR-(self.colorBreathR*i/self.breathSteps), self.colorBreathG-(self.colorBreathG*i/self.breathSteps), self.colorBreathB-(self.colorBreathB*i/self.breathSteps))
-				time.sleep(0.03)
+				self.setColor(self.colorBreathR-(self.colorBreathR*i/breathSteps), self.colorBreathG-(self.colorBreathG*i/breathSteps), self.colorBreathB-(self.colorBreathB*i/breathSteps))
+				time.sleep(breathDelay)
 
 
 	def frontLight(self, switch):
