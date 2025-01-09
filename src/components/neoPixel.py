@@ -37,6 +37,9 @@ class NeoPixel(threading.Thread):
 		self.__flag = threading.Event()
 		self.__flag.clear()
 
+		# wait for the thread to start
+		time.sleep(0.5)
+
 	# Define functions which animate LEDs in various ways.
 	def setColor(self, R, G, B):
 		color = Color(int(R),int(G),int(B))
