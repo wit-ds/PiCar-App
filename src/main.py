@@ -1,15 +1,11 @@
 #!/usr/bin/env/python
 
-import time
-import threading
-import socket
 import asyncio
 import websockets
 import json
 
 import flaskRoute
 import raspberryInfos
-import robotLight
 
 import logic
 
@@ -150,29 +146,19 @@ if __name__ == '__main__':
     global robot
     robot = logic.PiCar()
 
-    try:
-        RL=robotLight.RobotLight()
-        RL.start()
-        RL.breath(70,70,255)
-    except:
-        pass
+    
 
     try:
         start_server = websockets.serve(main_logic, '0.0.0.0', 8888)
         asyncio.get_event_loop().run_until_complete(start_server)
         print('waiting for connection...')
     except Exception as e:
-        print(e)
-        RL.setColor(0,0,0)
+        robot.setError('websockets error', e)
 
-    try:
-        RL.setColor(0,80,255)
-    except:
-        pass
+    robot.setInitied()
 
     try:
         asyncio.get_event_loop().run_forever()
     except Exception as e:
         print(e)
-        RL.setColor(0,0,0)
         robot.cleanup()
