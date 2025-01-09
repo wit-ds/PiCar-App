@@ -16,7 +16,7 @@ class PiCar:
         try:
             self.neoPixel=neoPixelCtrl.NeoPixel()
             self.neoPixel.start()
-            self.neoPixel.breath(colorGreen[0], colorGreen[1], colorGreen[2])
+            self.neoPixel.breath(0,255,0)
         except:
             pass
     
@@ -26,7 +26,7 @@ class PiCar:
         self.neoPixel.setColor(colorRed[0], colorRed[1], colorRed[2])
         
     def setInitied(self):
-        self.neoPixel.breath(colorBlue[0], colorBlue[1], colorBlue[2])
+        self.neoPixel.breath(0,0,255)
 
     def move(self, command_input, response):
         if 'forward' == command_input:

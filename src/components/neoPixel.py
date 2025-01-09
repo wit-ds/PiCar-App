@@ -117,6 +117,13 @@ class NeoPixel(threading.Thread):
 if __name__ == '__main__':
 	pixels=NeoPixel()
 	pixels.start()
+	pixels.breath(255,0,0)
+	time.sleep(5)
+	pixels.breath(0,255,0)
+	time.sleep(5)
+	pixels.breath(0,0,255)
+	time.sleep(5)
+	pixels.pause()
 	pixels.police()
 	time.sleep(5)
 	pixels.pause()
