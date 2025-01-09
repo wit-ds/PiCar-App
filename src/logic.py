@@ -23,10 +23,10 @@ class PiCar:
     def setError(self, message, error):
         print(message)
         print(error)
-        self.robotLight.setColor(colorRed)
+        self.robotLight.setColor(colorRed[0], colorRed[1], colorRed[2])
         
     def setInitied(self):
-        self.robotLight.setColor(colorGreen)
+        self.robotLight.setColor(colorGreen[0], colorGreen[1], colorGreen[2])
 
     def move(self, command_input, response):
         if 'forward' == command_input:
