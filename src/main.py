@@ -10,7 +10,10 @@ import json
 import flaskRoute
 import raspberryInfos
 import robotLight
-import propulsion
+
+import logic
+
+robot = logic.PiCar()
 
 speed_set = 100
 rad = 0.5
@@ -26,20 +29,6 @@ async def check_permit(websocket):
         else:
             response_str = "sorry, the username or password is wrong, please submit again"
             await websocket.send(response_str)
-
-
-def robotCtrl(command_input, response):
-    if 'forward' == command_input:
-        direction_command = 'forward'
-        propulsion.move(speed_set, 'forward', 'no', rad)
-    
-    elif 'backward' == command_input:
-        direction_command = 'backward'
-        propulsion.move(speed_set, 'backward', 'no', rad)
-
-    elif 'DS' in command_input:
-        direction_command = 'no'
-        propulsion.move(speed_set, 'no', 'no', rad)
 
 
 async def recv_msg(websocket):
@@ -67,8 +56,8 @@ async def recv_msg(websocket):
 
         if isinstance(data,str):
             
-            robotCtrl(data, response)
-
+            robot.propulsion(data, response)
+            
             # switchCtrl(data, response)
 
             # functionSelect(data, response)
