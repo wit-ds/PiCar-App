@@ -9,10 +9,10 @@ import sys
 from rpi_ws281x import Adafruit_NeoPixel, Color
 import threading
 
-breathSteps = 10
-breathDelay = 0.1
+breathSteps = 20
+breathDelay = 0.07
 
-class RobotLight(threading.Thread):
+class NeoPixel(threading.Thread):
 	def __init__(self, *args, **kwargs):
 		self.LED_COUNT	  	= 3	  # Number of LED pixels.
 		self.LED_PIN		= 12	  # GPIO pin connected to the pixels (18 uses PWM!).
@@ -28,70 +28,56 @@ class RobotLight(threading.Thread):
 
 		self.lightMode = 'none'		#'none' 'police' 'breath'
 
-		GPIO.setwarnings(False)
-		GPIO.setmode(GPIO.BCM)
-		GPIO.setup(5, GPIO.OUT)
-		GPIO.setup(6, GPIO.OUT)
-		GPIO.setup(13, GPIO.OUT)
-
 		# Create NeoPixel object with appropriate configuration.
 		self.strip = Adafruit_NeoPixel(self.LED_COUNT, self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT, self.LED_BRIGHTNESS, self.LED_CHANNEL)
 		# Intialize the library (must be called once before other functions).
 		self.strip.begin()
 
-		super(RobotLight, self).__init__(*args, **kwargs)
+		super(NeoPixel, self).__init__(*args, **kwargs)
 		self.__flag = threading.Event()
 		self.__flag.clear()
 
 	# Define functions which animate LEDs in various ways.
 	def setColor(self, R, G, B):
-		"""Wipe color across display a pixel at a time."""
 		color = Color(int(R),int(G),int(B))
 		for i in range(self.strip.numPixels()):
 			self.strip.setPixelColor(i, color)
 			self.strip.show()
 
-
-	def setSomeColor(self, R, G, B, ID):
+	def setColorId(self, R, G, B, ID):
 		color = Color(int(R),int(G),int(B))
-		#print(int(R),'  ',int(G),'  ',int(B))
 		for i in ID:
 			self.strip.setPixelColor(i, color)
 			self.strip.show()
-
 
 	def pause(self):
 		self.lightMode = 'none'
 		self.setColor(0,0,0)
 		self.__flag.clear()
 
-
 	def resume(self):
 		self.__flag.set()
-
 
 	def police(self):
 		self.lightMode = 'police'
 		self.resume()
 
-
 	def policeProcessing(self):
 		while self.lightMode == 'police':
 			for i in range(0,3):
-				self.setSomeColor(0,0,255,[0,1,2])
+				self.setColorId(0,0,255,[0,1,2])
 				time.sleep(0.05)
-				self.setSomeColor(0,0,0,[0,1,2])
+				self.setColorId(0,0,0,[0,1,2])
 				time.sleep(0.05)
 			if self.lightMode != 'police':
 				break
 			time.sleep(0.1)
 			for i in range(0,3):
-				self.setSomeColor(255,0,0,[0,1,2])
+				self.setColorId(255,0,0,[0,1,2])
 				time.sleep(0.05)
-				self.setSomeColor(0,0,0,[0,1,2])
+				self.setColorId(0,0,0,[0,1,2])
 				time.sleep(0.05)
 			time.sleep(0.1)
-
 
 	def breath(self, R_input, G_input, B_input):
 		self.lightMode = 'breath'
@@ -99,7 +85,6 @@ class RobotLight(threading.Thread):
 		self.colorBreathG = G_input
 		self.colorBreathB = B_input
 		self.resume()
-
 
 	def breathProcessing(self):
 		while self.lightMode == 'breath':
@@ -114,55 +99,6 @@ class RobotLight(threading.Thread):
 				self.setColor(self.colorBreathR-(self.colorBreathR*i/breathSteps), self.colorBreathG-(self.colorBreathG*i/breathSteps), self.colorBreathB-(self.colorBreathB*i/breathSteps))
 				time.sleep(breathDelay)
 
-
-	def frontLight(self, switch):
-		if switch == 'on':
-			GPIO.output(6, GPIO.HIGH)
-			GPIO.output(13, GPIO.HIGH)
-		elif switch == 'off':
-			GPIO.output(5,GPIO.LOW)
-			GPIO.output(13,GPIO.LOW)
-
-
-	def switch(self, port, status):
-		if port == 1:
-			if status == 1:
-				GPIO.output(5, GPIO.HIGH)
-			elif status == 0:
-				GPIO.output(5,GPIO.LOW)
-			else:
-				pass
-		elif port == 2:
-			if status == 1:
-				GPIO.output(6, GPIO.HIGH)
-			elif status == 0:
-				GPIO.output(6,GPIO.LOW)
-			else:
-				pass
-		elif port == 3:
-			if status == 1:
-				GPIO.output(13, GPIO.HIGH)
-			elif status == 0:
-				GPIO.output(13,GPIO.LOW)
-			else:
-				pass
-		else:
-			print('Wrong Command: Example--switch(3, 1)->to switch on port3')
-
-
-	def set_all_switch_off(self):
-		self.switch(1,0)
-		self.switch(2,0)
-		self.switch(3,0)
-
-
-	def headLight(self, switch):
-		if switch == 'on':
-			GPIO.output(5, GPIO.HIGH)
-		elif switch == 'off':
-			GPIO.output(5,GPIO.LOW)
-
-
 	def lightChange(self):
 		if self.lightMode == 'none':
 			self.pause()
@@ -170,7 +106,6 @@ class RobotLight(threading.Thread):
 			self.policeProcessing()
 		elif self.lightMode == 'breath':
 			self.breathProcessing()
-
 
 	def run(self):
 		while 1:
@@ -180,11 +115,9 @@ class RobotLight(threading.Thread):
 
 
 if __name__ == '__main__':
-	RL=RobotLight()
-	RL.start()
-	RL.breath(70,70,255)
-	time.sleep(15)
-	RL.pause()
-	RL.frontLight('off')
-	time.sleep(2)
-	RL.police()
+	pixels=NeoPixel()
+	pixels.start()
+	pixels.police()
+	time.sleep(5)
+	pixels.pause()
+	pixels.breath(70,70,255)
