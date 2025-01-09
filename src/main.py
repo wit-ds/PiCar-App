@@ -13,11 +13,6 @@ import robotLight
 
 import logic
 
-robot = logic.PiCar()
-
-speed_set = 100
-rad = 0.5
-
 async def check_permit(websocket):
     while True:
         recv_str = await websocket.recv()
@@ -30,12 +25,7 @@ async def check_permit(websocket):
             response_str = "sorry, the username or password is wrong, please submit again"
             await websocket.send(response_str)
 
-
 async def recv_msg(websocket):
-    # global speed_set, modeSelect
-    # direction_command = 'no'
-    # turn_command = 'no'
-
     while True: 
         response = {
             'status' : 'ok',
@@ -56,7 +46,7 @@ async def recv_msg(websocket):
 
         if isinstance(data,str):
             
-            robot.propulsion(data, response)
+            robot.move(data, response)
             
             # switchCtrl(data, response)
 
@@ -151,24 +141,14 @@ async def main_logic(websocket, path):
     await check_permit(websocket)
     await recv_msg(websocket)
 
-
 if __name__ == '__main__':
-    # switch.switchSetup()
-    # switch.set_all_switch_off()
-    
+
     global flask_app
     flask_app = flaskRoute.webapp()
     flask_app.startthread()
 
-    # """ 
-    # If the Raspberry Pi is disconnected from the Internet, stop the car from moving.
-    # Reconnect to the network, you can continue to control the car.
-    # If you need this function, please enable the following three lines of code.
-    # Note: The program will additionally occupy the running memory of the Raspberry Pi.
-    # """
-    # testNC_threading=threading.Thread(target=test_Network_Connection)
-    # testNC_threading.setDaemon(False)
-    # testNC_threading.start()                                     
+    global robot
+    robot = logic.PiCar()
 
     try:
         RL=robotLight.RobotLight()
@@ -195,4 +175,4 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
         RL.setColor(0,0,0)
-        propulsion.destroy()
+        robot.cleanup()
