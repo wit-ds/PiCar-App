@@ -3,7 +3,7 @@
 import RPi.GPIO as GPIO
 import time
 
-class MotorController:
+class Propulsion:
     """
     Classe pour contrôler deux moteurs à l'aide d'un Raspberry Pi et de la bibliothèque RPi.GPIO.
     """
@@ -91,24 +91,6 @@ class MotorController:
         self.set_motor(self.pwm_a, self.in1, self.in2, 'backward', speed)
         self.set_motor(self.pwm_b, self.in3, self.in4, 'backward', speed)
 
-    def turn_left(self, speed):
-        """
-        Fait tourner le robot vers la gauche en inversant le moteur gauche et en avançant le moteur droit.
-
-        :param speed: Vitesse des moteurs (0 à 100).
-        """
-        self.set_motor(self.pwm_a, self.in1, self.in2, 'backward', speed)
-        self.set_motor(self.pwm_b, self.in3, self.in4, 'forward', speed)
-
-    def turn_right(self, speed):
-        """
-        Fait tourner le robot vers la droite en avançant le moteur gauche et en inversant le moteur droit.
-
-        :param speed: Vitesse des moteurs (0 à 100).
-        """
-        self.set_motor(self.pwm_a, self.in1, self.in2, 'forward', speed)
-        self.set_motor(self.pwm_b, self.in3, self.in4, 'backward', speed)
-
     def stop(self):
         """
         Arrête les deux moteurs en mettant le rapport cyclique à 0 et en définissant les broches de direction à LOW.
@@ -127,26 +109,18 @@ class MotorController:
         self.stop()
         GPIO.cleanup()
 
-# Exemple d'utilisation de la classe MotorController
+# Exemple d'utilisation de la classe Propulsion
 if __name__ == '__main__':
     try:
         # Initialisation du contrôleur de moteurs avec les broches GPIO correspondantes
         # et inversion de direction activée
-        motor_controller = MotorController(
+        motor_controller = Propulsion(
             en_a=4, in1=26, in2=21, en_b=17, in3=27, in4=18, reverse=True
         )
 
         # Avancer (qui sera inversé en reculer) à 50% de la vitesse pendant 2 secondes
         motor_controller.move_forward(50)
         time.sleep(2)
-
-        # Tourner à gauche à 50% de la vitesse pendant 1 seconde
-        motor_controller.turn_left(50)
-        time.sleep(1)
-
-        # Tourner à droite à 50% de la vitesse pendant 1 seconde
-        motor_controller.turn_right(50)
-        time.sleep(1)
 
         # Reculer (qui sera inversé en avancer) à 50% de la vitesse pendant 2 secondes
         motor_controller.move_backward(50)
