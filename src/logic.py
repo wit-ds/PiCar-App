@@ -2,7 +2,7 @@
 
 import motorController
 
-motorCtrl = motorController.MotorController(4, 26, 21, 17, 27, 18)
+motorCtrl = motorController.MotorController(4, 26, 21, 17, 27, 18, True)
 
 class PiCar:
 
