@@ -1,12 +1,11 @@
-#!/usr/bin/env/python
-
 import asyncio
 import websockets
 import json
 import threading
 import logging
-
-import flaskRoute
+import os
+from flask import Flask, render_template, Response, send_from_directory
+from flask_cors import CORS
 import components.raspberry as raspberryInfos
 import logic
 
@@ -14,6 +13,55 @@ import logic
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialisation de l'application Flask
+app = Flask(__name__)
+CORS(app, supports_credentials=True)
+
+# Intégration de la caméra
+from components.camera_opencv import Camera
+camera = Camera()
+
+def gen(camera):
+    """Video streaming generator function."""
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/video_feed')
+def video_feed():
+    """Video streaming route."""
+    return Response(gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+@app.route('/api/img/<path:filename>')
+def sendimg(filename):
+    return send_from_directory(dir_path+'/dist/img', filename)
+
+@app.route('/js/<path:filename>')
+def sendjs(filename):
+    return send_from_directory(dir_path+'/dist/js', filename)
+
+@app.route('/css/<path:filename>')
+def sendcss(filename):
+    return send_from_directory(dir_path+'/dist/css', filename)
+
+@app.route('/api/img/icon/<path:filename>')
+def sendicon(filename):
+    return send_from_directory(dir_path+'/dist/img/icon', filename)
+
+@app.route('/fonts/<path:filename>')
+def sendfonts(filename):
+    return send_from_directory(dir_path+'/dist/fonts', filename)
+
+@app.route('/<path:filename>')
+def sendgen(filename):
+    return send_from_directory(dir_path+'/dist', filename)
+
+@app.route('/')
+def index():
+    return send_from_directory(dir_path+'/dist', 'index.html')
 
 async def check_permit(websocket):
     """
@@ -88,6 +136,7 @@ async def recv_msg(websocket):
         logger.info(f'Données reçues : {data}')
         response_json = json.dumps(response)
         await websocket.send(response_json)
+        # logger.info(f'Données envoyés : {response_json}')
 
 async def main_logic(websocket, path):
     """
@@ -108,23 +157,22 @@ def start_websocket_server():
     loop.run_forever()
 
 if __name__ == '__main__':
-    # Initialisation de l'application Flask dans un thread séparé
-    flask_app = flaskRoute.webapp()
-    flask_thread = threading.Thread(target=flask_app.run, kwargs={'host': '0.0.0.0', 'port': 5000})
-    flask_thread.start()
-    logger.info('Application Flask démarrée.')
-
     # Initialisation de l'objet robot
     robot = logic.PiCar()
 
     try:
+        # Démarrage de l'application Flask dans un thread séparé
+        flask_thread = threading.Thread(target=app.run, kwargs={'host': '0.0.0.0', 'port': 5000})
+        flask_thread.start()
+        logger.info('Application Flask démarrée.')
+
         # Démarrage du serveur WebSocket dans un thread séparé
         websocket_thread = threading.Thread(target=start_websocket_server)
         websocket_thread.start()
         logger.info('Serveur WebSocket démarré.')
     except Exception as e:
-        logger.error(f'Erreur lors du démarrage du serveur WebSocket : {e}')
-        robot.setError('websockets error', e)
+        logger.error(f'Erreur lors du démarrage des serveurs : {e}')
+        robot.setError('init error', e)
 
     robot.setInitied()
 
@@ -139,5 +187,3 @@ if __name__ == '__main__':
     finally:
         robot.cleanup()
         logger.info('Nettoyage et arrêt du programme.')
-
-        
