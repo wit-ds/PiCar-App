@@ -186,4 +186,10 @@ if __name__ == '__main__':
         logger.error(f'Erreur inattendue : {e}')
     finally:
         robot.cleanup()
+        # si websocket_thread ou flask_thread est encore actif, on les arrête
+        if websocket_thread.is_alive():
+            websocket_thread.kill()
+        if flask_thread.is_alive():
+            flask_thread.kill()
+        
         logger.info('Nettoyage et arrêt du programme.')
