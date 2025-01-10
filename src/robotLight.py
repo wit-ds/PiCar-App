@@ -22,23 +22,23 @@ class RobotLight():
 	def switch(self, port, status):
 		if port == 1:
 			if status == 1:
-				GPIO.output(5, GPIO.HIGH)
+				GPIO.output(port1, GPIO.HIGH)
 			elif status == 0:
-				GPIO.output(5,GPIO.LOW)
+				GPIO.output(port1,GPIO.LOW)
 			else:
 				pass
 		elif port == 2:
 			if status == 1:
-				GPIO.output(6, GPIO.HIGH)
+				GPIO.output(port2, GPIO.HIGH)
 			elif status == 0:
-				GPIO.output(6,GPIO.LOW)
+				GPIO.output(port2,GPIO.LOW)
 			else:
 				pass
 		elif port == 3:
 			if status == 1:
-				GPIO.output(13, GPIO.HIGH)
+				GPIO.output(port3, GPIO.HIGH)
 			elif status == 0:
-				GPIO.output(13,GPIO.LOW)
+				GPIO.output(port3,GPIO.LOW)
 			else:
 				pass
 		else:
